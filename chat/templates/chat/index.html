@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Async Chat Web</title>
+	<!-- alpinejs -->
+	<script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script> <!-- alpinejs intersect -->
+	<script src="//unpkg.com/alpinejs" defer></script> <!-- alpinejs core -->
+	<!-- fontawesome -->
+	<script src="//kit.fontawesome.com/849ec56e4d.js" defer crossorigin="anonymous"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+	<div class="container mx-auto">
+		<h1 class="text-3xl text-center font-bold">Chat Rooms</h1>
+
+		<p class="text-center">What chat room would you like to enter?</p>
+
+		<form
+			class="flex justify-center" 
+			method="GET" 
+			x-data="{ roomName: '' }"
+			:action="`/chat/${roomName}/`"
+		>
+			<input 
+				autofocus 
+				type="text"
+				class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+				placeholder="Enter room name"
+				x-model="roomName"
+			>
+			<button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+				Enter
+			</button>
+		</form>
+
+		<!-- <div class="flex justify-center">
+			<div class="w-1/2">
+				<ul class="mt-4">
+					{% for room in rooms %}
+						<li class="flex justify-between items-center">
+							<a href="/chat/{{ room.name }}/" class="text-blue-500 hover:text-blue-700">
+								{{ room.name }}
+							</a>
+							<span class="text-gray-500 text-sm">
+								{{ room.count }} user{{ room.count|pluralize }}
+							</span>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div> -->
+	</div>
+</body>

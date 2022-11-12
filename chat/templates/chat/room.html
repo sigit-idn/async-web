@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Async Chat Room {{ room_name }}</title>
+	<!-- alpinejs -->
+	<script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script> <!-- alpinejs intersect -->
+	<script src="//unpkg.com/alpinejs" defer></script> <!-- alpinejs core -->
+	<!-- fontawesome -->
+	<script src="//kit.fontawesome.com/849ec56e4d.js" defer crossorigin="anonymous"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+	<div class="container mx-auto">
+		<h1 class="text-3xl text-center font-bold">Chat Room {{ room_name }}</h1>
+
+		<p class="text-center">Welcome to the chat room {{ room_name }}!</p>
+
+		<form
+			class="flex flex-col items-center"
+			@submit.prevent="sendMessage"
+			x-data="{
+				chatLog: '',
+				message: '',
+				connected() {
+					return chatSocket.readyState === WebSocket.OPEN;
+				},
+				sendMessage() {
+					if (this.connected() && this.message.length > 0) {
+						chatSocket.send(JSON.stringify({
+							'room': '{{ room_name }}',
+							'message': this.message
+						}));
+						this.message = '';
+					}
+				},
+			}"
+
+			x-init="
+				chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/{{ room_name }}/`);
+
+				chatSocket.onmessage = function(e) {
+					const data = JSON.parse(e.data);
+					chatLog += (data.message + '\n');
+				};
+
+				chatSocket.onclose = function(e) {
+					console.error('Chat socket closed unexpectedly');
+				};
+
+				chatSocket.onopen = function(e) {
+					console.log('Chat socket opened');
+				};
+			"
+		>
+
+			<ul class="w-full max-w-2xl p-4 bg-gray-100 rounded-lg shadow-lg">
+				<template x-for="line in chatLog.split('\n')" :key="line">
+					<li class="text-gray-700" x-text="line"></li>
+				</template>
+			</ul>
+
+			<input
+				autofocus
+				class="w-1/2 p-2 border border-gray-300 rounded-t"
+				type="text"
+				x-model="message"
+				x-ref="messageInput"
+			>
+
+			<button
+				class="w-1/2 p-2 rounded-b bg-fuchsia-500 text-white active:bg-fuchsia-600 disabled:opacity-50"
+				type="submit"
+				:disabled="!connected"
+			>Send</button>
+
+		</form>
+
+	</div>
+</body>
